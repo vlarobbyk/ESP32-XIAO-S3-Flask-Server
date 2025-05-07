@@ -1,32 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     <meta charset="UTF-8">
-     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <style>
-          .container{
-               margin: 0;
-               padding: 0;
-               width: 100%;
-               height: 100vh;
-               background-color: #f1f1bc;
-               color: black;
-               text-align: center;
-          }
-          .containerHeader{
-               display: flex;
-               flex-direction: column;
-               align-items: center;
-          }
-     </style>
-     <title>Videostreaming ESP32-CAM</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Videostreaming ESP32-CAM</title>
+    <style>
+        .container {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: #f1f1bc;
+            color: black;
+            text-align: center;
+        }
+        .containerHeader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        form {
+            margin: 20px auto;
+            width: 80%;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="range"] {
+            width: 60%;
+        }
+        img#videoStream {
+            max-width: 100%;
+            margin-top: 20px;
+            border: 2px solid #000;
+        }
+    </style>
 </head>
-<body class = "container">
-     <div class="containerHeader">
-          <h1>Video Streaming</h1>
-          <img src="{{ url_for('static', filename='Header.webp') }}" alt="Image header" width="50%">
-     </div>
-     <img src="{{ url_for('video_stream') }}">
+
+<body class="container">
+    <div class="containerHeader">
+        <h1>Video Streaming</h1>
+        <img src="{{ url_for('static', filename='Header.webp') }}" alt="Image header" width="50%">
+    </div>
+
+    <!-- Sliders de control -->
+    <form id="noiseForm">
+        <label for="mean">Media Gaussiana:</label><br>
+        <input type="range" id="mean" name="mean" min="0" max="100" value="0">
+        <span id="meanVal">0</span><br><br>
+
+        <label for="std">Desviación estándar Gaussiana:</label><br>
+        <input type="range" id="std" name="std" min="0" max="100" value="25">
+        <span id="stdVal">25</span><br><br>
+
+        <label for="var">Varianza Speckle:</label><br>
+        <input type="range" id="var" name="var" min="0" max="100" value="4">
+        <span id="varVal">4</span><br><br>
+
+        <button type="submit">Aplicar ruido</button>
+    </form>
+    <form action="/comparar_ruido">
+        <button type="submit">Comparar Filtros con Ruido</button>
+    </form>
+
+    <form action="/comparar_copyto">
+        <button type="submit">Comparar Regiones con copyTo()</button>
+    </form>
+
+
+
+
+    <!-- Video -->
+<!-- Video container donde se inserta el stream dinámicamente -->
+    <iframe id="videoStream" style="width:100%; height:800px; border:none;" src="/stream_page"></iframe>
+
+    <div class="container">
+        <h1>Procesamiento de Imágenes Médicas</h1>
+        <p>Sube hasta 3 imágenes médicas (radiografías, angiografías, TACs, etc.) para aplicar operaciones morfológicas.</p>
+        
+        <form action="/process" method="post" enctype="multipart/form-data">
+            <input type="file" name="image" accept="image/*" multiple required>
+            <p>Máximo 3 imágenes</p>
+            <button type="submit">Procesar Imágenes</button>
+        </form>
+    </div>
+
+
+<script>
+    const form = document.getElementById('noiseForm');
+    const meanInput = document.getElementById("mean");
+    const stdInput = document.getElementById("std");
+    const varInput = document.getElementById("var");
+
+    meanInput.oninput = () => document.getElementById("meanVal").textContent = meanInput.value;
+    stdInput.oninput = () => document.getElementById("stdVal").textContent = stdInput.value;
+    varInput.oninput = () => document.getElementById("varVal").textContent = varInput.value;
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const mean = meanInput.value;
+        const std = stdInput.value;
+        const variance = varInput.value;
+        const query = `?mean=${mean}&std=${std}&var=${variance}&t=${Date.now()}`;
+        document.getElementById("videoStream").src = "/stream_page" + query;
+    });
+</script>
+     
 </body>
 </html>

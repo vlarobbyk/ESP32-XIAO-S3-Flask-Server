@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Comparación de Resultados</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .comparison-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .image-set {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+        
+        .image-header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .image-row {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .image-comparison {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .image-label {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .observation {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e8f4ff;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <h1>Comparación de Resultados de Mejora de Imágenes Médicas</h1>
+    
+    <div class="comparison-container">
+        {% for result in results %}
+            <div class="image-set">
+                <div class="image-header">
+                    <h3>Imagen: {{ result.original_name }}</h3>
+                    <p>Tamaño de máscara: {{ result.kernel_size }}</p>
+                </div>
+                
+                <div class="image-row">
+                    <!-- Original vs Mejorada -->
+                    <div class="image-comparison">
+                        <div>
+                            <div class="image-label">Original</div>
+                            <img src="{{ url_for('processed_file', filename=result.original_path) }}" 
+                                 alt="Original" 
+                                 style="width: 100%; border-radius: 5px;">
+                        </div>
+                        <div>
+                            <div class="image-label">Combinada (Top Hat - Black Hat)</div>
+                            <img src="{{ url_for('processed_file', filename=result.combined_path) }}" 
+                                 alt="Combinada" 
+                                 style="width: 100%; border-radius: 5px;">
+                        </div>
+                    </div>
+                    
+                    <!-- Operaciones morfológicas individuales -->
+                    <div class="image-comparison">
+                        <div>
+                            <div class="image-label">Erosión</div>
+                            <img src="{{ url_for('processed_file', filename=result.erosion_path) }}" 
+                                 alt="Erosión" 
+                                 style="width: 100%; border-radius: 5px;">
+                        </div>
+                        <div>
+                            <div class="image-label">Dilatación</div>
+                            <img src="{{ url_for('processed_file', filename=result.dilation_path) }}" 
+                                 alt="Dilatación" 
+                                 style="width: 100%; border-radius: 5px;">
+                        </div>
+                    </div>
+                    
+                    <div class="image-comparison">
+                        <div>
+                            <div class="image-label">Top Hat</div>
+                            <img src="{{ url_for('processed_file', filename=result.tophat_path) }}" 
+                                 alt="Top Hat" 
+                                 style="width: 100%; border-radius: 5px;">
+                        </div>
+                        <div>
+                            <div class="image-label">Black Hat</div>
+                            <img src="{{ url_for('processed_file', filename=result.blackhat_path) }}" 
+                                 alt="Black Hat" 
+                                 style="width: 100%; border-radius: 5px;">
+                        </div>
+                    </div>
+                    
+                    <!-- Análisis de resultados -->
+                    <div class="observation">
+                        <strong>Observaciones:</strong>
+                        <ul>
+                            <li><strong>Erosión:</strong> Reduce detalles finos y separa objetos conectados</li>
+                            <li><strong>Dilatación:</strong> Llena pequeños huecos y conecta objetos cercanos</li>
+                            <li><strong>Top Hat:</strong> Realza detalles brillantes sobre fondo oscuro</li>
+                            <li><strong>Black Hat:</strong> Realza detalles oscuros sobre fondo claro</li>
+                            <li><strong>Combinación:</strong> Mejora el contraste general y resalta características médicas relevantes</li>
+                        </ul>
+                        <p><strong>Conclusión:</strong> La operación combinada (imagen original + (Top Hat - Black Hat)) muestra una mejora significativa en la nitidez y claridad de los objetos médicos, facilitando la observación de estructuras anatómicas y posibles anomalías.</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
