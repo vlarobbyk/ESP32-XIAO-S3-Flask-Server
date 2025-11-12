@@ -5,6 +5,9 @@
 # Description: A simple example to process video captured by the ESP32-XIAO-S3 or ESP32-CAM-MB in Flask.
 # Updated: 2025-08-11
 
+# Forked by: Markeeto
+# Date of Fork: 2025-08-12
+
 from flask import Flask, render_template, Response, stream_with_context, Request
 from io import BytesIO
 
