@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parte 2: Morfología Médica</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 25px;
+        }
+        h1 {
+            text-align: center;
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .control-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        .control-group select, .control-group input {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+        .control-group input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 19px; /* Alinear con los otros inputs */
+        }
+        .control-group input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 columnas */
+            gap: 15px;
+        }
+        .image-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fafafa;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        }
+        .image-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 1rem;
+            color: #555;
+        }
+        .image-card img {
+            max-width: 100%;
+            height: auto;
+            background-color: #000;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Parte 2: Operaciones Morfológicas en Imágenes Médicas</h1>
+
+        <form class="controls" method="POST">
+            <div class="control-group">
+                <label for="image_select">1. Seleccione una Imagen:</label>
+                <select name="image_select" id="image_select">
+                    {% for name in image_names %}
+                        <option value="{{ name }}">{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="kernel_size">2. Tamaño del Kernel (impar):</label>
+                <input type="number" name="kernel_size" id="kernel_size" value="37" min="3" step="2">
+            </div>
+
+            <div class="control-group">
+                <input type="submit" value="Procesar Imágenes">
+            </div>
+        </form>
+
+        {% if results %}
+            <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 25px;">
+            <div class="results-grid">
+                {% for title, path in results %}
+                    <div class="image-card">
+                        <h3>{{ title }}</h3>
+                        <img src="{{ url_for('static', filename=path) }}" alt="{{ title }}">
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>
